@@ -31,3 +31,37 @@
 - [ ] **Flagged media: mobile layout.** No mobile layout hand-off for the review pages yet.
 - [ ] **Flagged media: Jamming flag decision.** Not recorded yet.
 - [ ] **Combine and remove shared controls.** Review the reusable controls in `.claude/rules/ui-shared.md` (`HistogramTimeline`, `BitrateSeriesChart`, `RssiSeriesChart`, `MediaPlayer`, `TimelineStrip`, `IntervalSecondsInput`, `LocalTimeText`), merge controls that overlap, and delete the ones pages no longer use.
+
+## Current plan (vast-gliding-coral.md)
+Full plan: `docs/plans/vast-gliding-coral.md` (31 issues). Status: planned, not started unless marked.
+- [ ] **1. Manual sync account selector.** Share provider and account with ScopeState, save to localStorage.
+- [ ] **2. Jamming, codec and flag backfill intervals.** Settings in minutes, one per service.
+- [ ] **3. Import / Export.** Move menu group, fix empty backup counts and path.
+- [ ] **4. Security events unknown-login filter.** Server-side, right panel, saved to localStorage.
+- [ ] **5. Loopback IP shows as LocalHost.** On security events and security log.
+- [ ] **6. Remove Event Type column** from security events.
+- [ ] **7. Merge /admin/pending-credentials into /settings/operators.**
+- [ ] **8. Push notifications fixes.** Missing preferences endpoint, subscribe parse, load saved values.
+- [ ] **9. Move Notifications and Reports** to System & Network.
+- [ ] **10. My Notifications page** under Admin > General (email and push per user).
+- [ ] **11. Alert lists capped at 5** with show more (Signal and Bit rate).
+- [ ] **12. Week by hour grid.** All-time values, green/yellow/red by std dev.
+- [ ] **13. Hover tooltip** on grid boxes (value, week and hour dev).
+- [ ] **14. Reading / Deviation radio** on the grid.
+- [ ] **15. Signal deviation flags heading** shows raw key. Fix resource.
+- [ ] **16. Flag table Type column** shows event type.
+- [ ] **17. Dev column** on flag table.
+- [ ] **18. Bit rate flags.** Rename heading to "Bit rate alerts", event type and dev.
+- [ ] **19. Flag navigator.** Readout on top, buttons side by side, no "flag" in labels.
+- [ ] **20. Event type next to playhead time** in histogram player.
+- [ ] **21. Auto-advance** to next unreviewed flag after Keep or Dismiss.
+- [ ] **22. Previous and Next buttons do nothing.** Missing OnNavigate wiring.
+- [ ] **23. Histogram hover** shows value and std dev.
+- [ ] **24. Notes panel.** Remove empty message, one-line note box that expands.
+- [ ] **25. Remove Recipient description and Passphrase** from /review/export.
+- [x] **26. Archive Cloudflare doc.** Done (5f7c5d79).
+- [ ] **27. Finish NuGet tasks 3.2, 3.3, 4.1, 4.2.**
+- [x] **28. Archive fully done plans.** Done.
+- [x] **29. Move open and partly done plans to plans/.** Done.
+- [ ] **30. Review and fix 5 GitHub dependency alerts** (2 critical, 3 moderate).
+- [ ] **31. test-support location.** Decision pending: keep or move into Utils.Testing.
