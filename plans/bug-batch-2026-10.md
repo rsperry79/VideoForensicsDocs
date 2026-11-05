@@ -7,6 +7,7 @@ Source: pasted bug list. Each non-test change follows TDD. Work in a worktree fr
 1. Correctness and false confidence
    - Ring snapshot fallback: a failed fresh snapshot must not silently use the latest image. Mark the result stale or failed in the UI and logs.
    - Flood camera shows online when offline: derive online status from recent heartbeat or health data.
+   - Devices offline detection: apply the same fix to every device, not only the flood camera. A device with no recent heartbeat or health data shows offline, and the device list and alerts use that status.
    - Timelapse interval: capture every 15 minutes. Fix the interval setting and the scheduler that reads it.
 2. Resilience
    - Ring throttling: catch `ThrottledException` at the service boundary. Show "rate-limited until HH:mm", keep the persisted backoff, stop per-request retries, and keep raw exception text out of the UI.
@@ -30,6 +31,10 @@ Source: pasted bug list. Each non-test change follows TDD. Work in a worktree fr
    - Move the "Signalling" ticket to the alarm view.
    - Right sidebar must not show details for items selected in the center pane.
    - Theme switch in the user menu.
+10. Live view
+   - Verify the camera-filter page on the live site: one tile per selected camera, latest still when not live, reload on a new snapshot.
+   - Confirm remote MAUI clients can resolve `IMediaItemRepository` for the page's latest still. If not, add a server-side endpoint for it.
+   - Decide the still window: the page looks back one hour, so a camera with no snapshot in that hour shows "No still yet".
 
 ## Decisions
 
