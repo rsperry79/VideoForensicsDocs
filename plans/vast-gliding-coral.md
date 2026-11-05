@@ -46,6 +46,17 @@ Saving the shared filter means the rail's provider, account and location also su
 
 ---
 
+## Decisions recorded (2026-11-05)
+
+- **RSSI and deviation flags, event type:** match the event whose clip overlaps the flag's window, using the RSSI review page's search pad. Show "No event" when nothing overlaps.
+- **Bit rate Dev baseline:** add a camera-wide all-time bit rate mean and sd query, so the value matches the grid and signal figures.
+- **Push route:** build `/api/v1/notifications/preferences` once, in Issue 10, covering push and email. Issue 8 only fixes the subscribe parse and page loading.
+- **Recipient on export:** remove it from the export manifest as well. This changes the manifest format; older exports will not match.
+- **Import / Export:** move to a new top-level Tools group.
+- **test-support:** move into `src/utils/testing/src/`, and add a Utils.Testing reference to every test project.
+- **Dependabot alerts:** review each alert, then fix criticals and moderates, one package per commit. Stop before any major version bump.
+- **My Notifications email:** on/off plus minimum severity, the same as push.
+
 # Issue 2: settings for Jamming, codec and flag backfills on /settings/services
 
 ## Context
