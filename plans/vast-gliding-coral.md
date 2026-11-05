@@ -119,7 +119,7 @@ Existing deployments have no stored value for the three new keys. Defaults of 15
 
 ## Decisions (from you)
 
-- "Unknown login" = `AuthFailure` rows where no operator could be matched (`OperatorId` empty).
+- "Unknown login" = `AuthFailure` rows where no operator could be matched (`OperatorId` is null, so the query uses `IS NULL`).
 - The filter moves to the right-side panel (`PageRightPanelContent`, as on manual-sync).
 - The setting is saved in localStorage.
 
@@ -387,6 +387,13 @@ What should the per-user email choice cover: on/off with a minimum severity (as 
 
 ---
 
+## Review note: access policy, client pattern and Issue 8 overlap
+
+- Access: `AccessPolicy` (`PageAccessRules.cs:9`) has no "any signed-in operator" value; the lowest is `ReadOnly`. Choose one, and check `SettingsAccessGateTests.cs` for how General items are gated for non-admins.
+- Client pattern: `Notifications.razor:423` posts with a raw `HttpClient`. `client-split.md` expects a `Remote*` service with `CancellationToken`. Decide whether a small service is needed.
+- Overlap with Issue 8: Issue 8 adds `/api/v1/push/preferences`; this issue replaces it with `/api/v1/notifications/preferences`. Decide whether 8's endpoint is the final route (fields added here), or whether 8 is dropped in favour of this issue. The tests for 8 would otherwise be rewritten.
+- Backwards compatibility: keeping the old push route needs a decision (CLAUDE.md asks before any compat code).
+
 # Issue 11: cap Signal and Bitrate alert lists at 5, with show-more
 
 ## Findings
@@ -438,7 +445,7 @@ Show at most 5 items. If there are more, show a link "Show N more" that expands 
 ## Steps
 
 1. **Red tests first.**
-   - (a) `SignalCalendar` / analysis test: the calendar is built from all samples when the range is all time, and the baseline mean and sd match an all-time calculation.
+   - (a) SUPERSEDED by Issue 14: grid means follow the selected range, and only the row, column and baseline sd use all samples. Analysis test for that split, with the baseline mean and sd match an all-time calculation.
    - (b) Colour classifier test (pure function, next to `SignalDeviation.Classify`): boundaries at exactly 1 and 2 sd (1.0 is yellow, 2.0 is red), and an empty box returns no colour.
    - (c) Page test: a box with `d < 1` renders the green class, and a box with `d >= 2` renders red. Record the red runs.
 2. **Analysis change (server side).** Compute the calendar and the baseline over all samples for the in-scope cameras, separate from the range-filtered timeline data. Keep one analysis call; add the all-time calendar and baseline to the response (server-side aggregation, not in-memory filtering on the client). Confirm the DTO change with the client-split rule (`Api.Contracts` DTO, versioned route).
@@ -617,6 +624,14 @@ Should the flag type stay visible (as a second line or tooltip), or should the c
 
 ---
 
+## Review note: RSSI flags have no clip
+
+`SignalDeviationAlerts` (line 98) and `BitrateDeviationAlerts` (lines 98-100) create flags with `MediaItemId = null`. Only `BitrateCollapse` flags have a clip. The join `MediaItem → DownloadEvent → Event` therefore returns no event type for RSSI and deviation flags, and Issues 16 and 20 would show "No event" for every RSSI flag.
+
+Also: `IMediaFlagRepository` returns the `MediaFlag` entity, which has no `EventType` field. Add it as a `[NotMapped]` property or an agreed projection, and populate it in `GetAsync`, `ListPageAsync` and `GetNeighbourAsync` (`MediaFlagOperations.cs`), then map it in `MediaFlagMapping.cs` and `MediaFlagDtos.cs`.
+
+Open point (decision needed before Issue 16 starts): how an RSSI flag gets an event type. Options: (a) look up the event whose clip overlaps the flag's window, using the same search pad the RSSI review page uses; (b) show "No event" for RSSI flags and show the event type only for bit rate flags.
+
 # Issue 17: Dev column in the flagged media table
 
 ## Findings
@@ -661,6 +676,16 @@ Should the flag type stay visible (as a second line or tooltip), or should the c
 
 ---
 
+## Open point
+
+Existing RSSI flags have no stored value. Either backfill them from the current all-time baseline (a one-off job), or leave them as "-" until they are re-flagged. The plan defaults to leaving them as "-".
+
+## Review note: write paths and DTO
+
+- `UpsertRaisedAsync` refreshes an existing Unreviewed row. The new `DeviationSigma` must be copied in that refresh path too (`MediaFlagOperations.cs`).
+- `BitrateDeviationAlerts.cs` also writes flags that appear in the bit rate table (Issue 18). It must store `DeviationSigma` as well.
+- `MediaFlagDto` is a positional record (`MediaFlagDtos.cs`). Adding a field breaks every constructor call and test. Update `MediaFlagMapping.cs` and the affected tests in the same change.
+
 # Issue 18: Bit rate flags table on /bitrate-history
 
 ## Decisions (confirmed)
@@ -703,6 +728,12 @@ Should the flag type stay visible (as a second line or tooltip), or should the c
 Do you want existing collapse flags backfilled with a Dev value, or should they stay "-" until re-raised (the default)?
 
 ---
+
+## Review note: bit rate baseline
+
+`MediaAnalysisService` judges a clip against the device's own earlier clips, with a seasonal and lighting baseline (`MediaAnalysisService.cs:128-138`). It has no camera-wide all-time bit rate mean or sd, which this issue needs. Either add a new query for the all-time baseline, or decide to reuse the existing baseline. Open point, to settle before Issue 18 starts.
+
+Also add the bit rate DTO change to `BitrateAnalysisDtos.cs` (Issue 12 names only `SignalAnalysisDtos.cs`).
 
 # Issue 19: flag navigator on the review pages (x of x, button labels, layout)
 
@@ -893,6 +924,29 @@ None. This is a wiring fix. Issue 21's auto-advance reuses the same navigation, 
 
 ---
 
+## Steps
+
+1. **Red tests first.** `BitrateSeriesChart` test: a bar's `<title>` text contains the kbps value for that second, and the clock time when `StartUtc` is set. Add the matching test for the RSSI histogram. Record the red runs.
+2. **Tooltip.** Add `<title>` inside each `<rect>` in `BitrateSeriesChart.razor`, formatted with the invariant culture for numbers and the user's zone (`UserTimeZone`, as `HistogramTimeline` does) for the time.
+3. **RSSI histogram.** Apply the same change to the RSSI review chart. Confirm its file and bar markup first.
+4. **Localization.** The tooltip format ("{0} · {1} kbps", "{0} · {1} dBm") goes in `SharedResources.resx`. Use placeholders, not string concatenation. Check the keys exist (Issue 15 lesson).
+5. **Performance.** A clip has one bar per second, so one `<title>` per bar is cheap. Do not add a separate hover overlay or JS.
+
+## Critical files
+
+- `src/client/ui/VideoForensics.Ui.Shared/src/Components/Review/BitrateSeriesChart.razor` (line 22)
+- The RSSI review histogram component (confirm the file name during implementation)
+- `src/client/ui/VideoForensics.Ui.Shared/src/Resources/SharedResources.resx`
+
+## Verification
+
+- Red then green for both chart tests (namespace filter, `--list-tests`).
+- Browser check on a local dev host: hovering a bar on the bit rate and RSSI review histograms shows the time and value.
+
+## Open point
+
+Should the tooltip show the clock time (as planned) or only the seconds offset into the clip?
+
 # Issue 24: Notes panel: no empty message, and a one-line note box that can expand
 
 ## Findings
@@ -962,6 +1016,14 @@ None. This is a wiring fix. Issue 21's auto-advance reuses the same navigation, 
 - Browser check on a local dev host: /review/export shows only the case picker and the Export button, and an export completes.
 
 ---
+
+## Open point
+
+Confirm that removing the passphrase is intended, given that the archive will no longer be passphrase-protected. If the archive must stay encrypted, I'll plan a different protection before this change.
+
+## Open point (added in review)
+
+The Recipient description is written into the export manifest (`EvidenceExportOrchestrator.cs:265`). Removing the box removes that chain-of-custody field. Confirm that dropping it is acceptable, separately from the passphrase question above.
 
 # Issue 26: archive the Cloudflare remaining-work doc
 
@@ -1103,37 +1165,6 @@ Move only the fully done plans. Partly done plans stay where they are.
 
 - `git status` shows renames, not deletes.
 - A grep for each old `.claude/plans/` path returns no live links.
-
-## Open point
-
-Confirm that removing the passphrase is intended, given that the archive will no longer be passphrase-protected. If the archive must stay encrypted, I'll plan a different protection before this change.
-
-## Steps
-
-1. **Red tests first.** `BitrateSeriesChart` test: a bar's `<title>` text contains the kbps value for that second, and the clock time when `StartUtc` is set. Add the matching test for the RSSI histogram. Record the red runs.
-2. **Tooltip.** Add `<title>` inside each `<rect>` in `BitrateSeriesChart.razor`, formatted with the invariant culture for numbers and the user's zone (`UserTimeZone`, as `HistogramTimeline` does) for the time.
-3. **RSSI histogram.** Apply the same change to the RSSI review chart. Confirm its file and bar markup first.
-4. **Localization.** The tooltip format ("{0} · {1} kbps", "{0} · {1} dBm") goes in `SharedResources.resx`. Use placeholders, not string concatenation. Check the keys exist (Issue 15 lesson).
-5. **Performance.** A clip has one bar per second, so one `<title>` per bar is cheap. Do not add a separate hover overlay or JS.
-
-## Critical files
-
-- `src/client/ui/VideoForensics.Ui.Shared/src/Components/Review/BitrateSeriesChart.razor` (line 22)
-- The RSSI review histogram component (confirm the file name during implementation)
-- `src/client/ui/VideoForensics.Ui.Shared/src/Resources/SharedResources.resx`
-
-## Verification
-
-- Red then green for both chart tests (namespace filter, `--list-tests`).
-- Browser check on a local dev host: hovering a bar on the bit rate and RSSI review histograms shows the time and value.
-
-## Open point
-
-Should the tooltip show the clock time (as planned) or only the seconds offset into the clip?
-
-## Open point
-
-Existing RSSI flags have no stored value. Either backfill them from the current all-time baseline (a one-off job), or leave them as "-" until they are re-flagged. The plan defaults to leaving them as "-".
 
 ---
 
