@@ -65,3 +65,33 @@ Full plan: `docs/plans/vast-gliding-coral.md` (31 issues). Status: planned, not 
 - [x] **29. Move open and partly done plans to plans/.** Done.
 - [ ] **30. Review and fix 5 GitHub dependency alerts** (2 critical, 3 moderate).
 - [ ] **31. test-support location.** Decision pending: keep or move into Utils.Testing.
+
+## Incomplete plans
+One line per plan that is not finished. Status is from each plan header; the plan files hold the detail.
+- [ ] **media-page-rework.md** (partly done). Batches B1–B8 built; no browser pass yet; follow-ups listed in the plan.
+- [ ] **platform-split-and-viewer.md** (partly done). Parts 1–3 merged; WebView2 range playback on MAUI Windows not verified.
+- [ ] **flagged-media-review.md** (plan, nothing built). Batch 0 decisions first.
+- [ ] **live-view-open-items.md** (partly done). Telemetry sampler, page test and full gate remain.
+- [ ] **live-view-telemetry-signalr.md** (open). No remote live-view service on origin/dev.
+- [ ] **evidence-store-backup-dr.md** (open). Scheduled backups, media backup, retention, off-box copy, restore verification.
+- [ ] **m7-offline-sync-engine.md** (open). No sync engine, cache or conflict policy.
+- [ ] **m8-multi-server-sync-secure-storage.md** (open). Depends on M7 for the replica half.
+- [ ] **mcp-per-user-and-per-case-scoping.md** (open, conditional on a product decision).
+- [ ] **self-service-password-reset-email.md** (open). Reset-by-email not built.
+- [ ] **web-push-over-https.md** (open). Deployment decision: HTTPS or no push on LAN.
+- [ ] **e2e-web-push-and-toast-delivery.md** (open). Send path has no tests; not verified on a live server.
+- [ ] **simple-mode-browser-check.md** (open). Manual browser pass not done.
+- [ ] **maui-webauthn-native-e2e.md** (open). Native code has no callers or tests; delete or wire in.
+- [ ] **maui-local-app-lock-verification.md** (manual check). Needs a real device.
+- [ ] **maui-local-process-log-source.md** (open). No local-process log source.
+- [ ] **create-network-shares-todo.md** (open). TODO still in the installer script.
+- [ ] **operator-details-admin-alert.md** (pending). Fix is on a local branch, not pushed.
+- [ ] **snapshot-timeline.md** (planned). No code written.
+- [ ] **SCHEDULED_SYNC_REFACTORED_PLAN.md** (partly complete). Background sync services not built.
+- [ ] **scheduled-background-sync-tasks-linux.md** (partly complete). Scheduled loops not built.
+- [ ] **chain-reset.md** (draft). Not started except where marked.
+- [ ] **device-pair-auth-operators.md** (paused). Nothing implemented yet.
+- [ ] **db-field-coverage.md** (in progress). Battery temperature item is still open.
+- [ ] **in-place-service-update.md** (status not checked). Some items marked done.
+- [ ] **bug-batch-2026-10.md** (status not checked).
+- [ ] **IMPLEMENTATION_PLAN.md** (approved). Tasks 1.1–4.2 are mostly open; see Issue 27 in the current plan.
