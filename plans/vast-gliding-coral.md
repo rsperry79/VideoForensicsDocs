@@ -56,6 +56,8 @@ Saving the shared filter means the rail's provider, account and location also su
 - **test-support:** move into `src/utils/testing/src/`, and add a Utils.Testing reference to every test project.
 - **Dependabot alerts:** review each alert, then fix criticals and moderates, one package per commit. Stop before any major version bump.
 - **My Notifications email:** on/off plus minimum severity, the same as push.
+- **Passphrase (Issue 25):** remove it. Exports are no longer passphrase-protected; another protection is needed before this ships (not yet planned).
+- **Dev backfill (Issues 17 and 18):** backfill existing flags from the current all-time baseline, as a one-off job.
 
 # Issue 2: settings for Jamming, codec and flag backfills on /settings/services
 
