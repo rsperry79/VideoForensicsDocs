@@ -7,6 +7,8 @@
 - [ ] **Initial sync on a new account, end to end.** Blocked: needs a real Ring sign-in through the add-account wizard, which only you can do.
 
 ## Open
+- [ ] **Devices offline detection.** Apply the flood-camera fix to every device: a device with no recent heartbeat or health data shows offline. See `bug-batch-2026-10.md` item 1.
+- [ ] **Live view.** Verify the camera-filter tiles on the live site, confirm remote MAUI clients can resolve `IMediaItemRepository` for the latest still, and decide the one-hour still window. See `bug-batch-2026-10.md` item 10.
 - [ ] **Nov 1: confirm the `health.battery_temp` unit.** Stored as deci-Kelvin (`2921` = 18.95 °C = 66 °F) because a wired Front Door doorbell reading 24 °F above a 42 °F evening (98223, 2026-10-30 02:56 UTC, ambient 5.6 °C) is plausible; hundredths of °C (29.21 °C) would be 42 °F above ambient. Pull the stored readings for Oct 31 and Nov 1 and compare with the hourly ambient temperature (Open-Meteo, lat 48.20, lon -122.13). Deci-Kelvin moves about 10 raw units per °C, hundredths of °C about 100. If the slope says hundredths of °C, change the conversion. `status_time` is settled: ticks of a 32768 Hz clock since the Unix epoch.
 - [ ] **Battery temp unit: read the sampler output.** The 12-hour sampler writes `scratchpad/battery_temp_samples.csv` (ends about 19:00 UTC on 2026-11-01). Fit the raw-to-ambient slope; close the item in `db-field-coverage.md` item 7 when settled.
 - [ ] **Remove `F:\VF-strip`.** Empty leftover worktree folder; the safety check blocked the removal, so you delete it.
