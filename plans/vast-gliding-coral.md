@@ -1154,3 +1154,34 @@ Reported by GitHub on push to `wip` (2026-11-05), on the default branch. Not rev
 ## Open point
 
 Do you want the review (step 1 and 2) only, or the fixes as well?
+
+---
+
+# Issue 31: move test-support into VideoForensics.Utils.Testing (decision pending)
+
+## Finding
+
+- `test-support/TestTempRedirect.cs` is not in `src/utils/testing/`. It is compiled into every test project as linked source through `Directory.Build.targets` (line 5). It redirects each test's temp folders into the checkout's git-ignored `.testtemp`.
+- It is not in Utils.Testing because not every test project references Utils.Testing, and the redirect has to apply before any test code runs. A library reference does not guarantee that.
+
+## Options
+
+1. **Keep as is (no change).** Document the reason in `.claude/project-layout.md`.
+2. **Move into Utils.Testing.** Move the file to `src/utils/testing/src/`, add a reference to Utils.Testing in every test project, and update the path in `Directory.Build.targets`. Bigger change, and it changes the build for every test project.
+
+## Steps (if option 2 is chosen)
+
+1. **Red check first.** Build every test project and record the current result, so any change in the build can be compared.
+2. **Move the file** with `git mv` to `src/utils/testing/src/TestTempRedirect.cs`, and update `Directory.Build.targets` to point at it.
+3. **Add references.** Add a `ProjectReference` to Utils.Testing in each test project that does not have one. Keep the redirect applied to every test project.
+4. **Verify.** Run a full build with `-m:1` to a scratch OutDir, then a test run, and confirm temp folders still land in `.testtemp`.
+5. **Commit after confirmation** (one push question).
+
+## Verification
+
+- Every test project builds.
+- Test temp folders land in `.testtemp` and are git-ignored.
+
+## Open point
+
+Keep it in place (option 1) or move it (option 2)?
