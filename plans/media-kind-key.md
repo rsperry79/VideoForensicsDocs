@@ -16,8 +16,16 @@ Add `MediaKind` (Clip, Snapshot, Timelapse, Still) to MediaItems and to the uniq
 5. Clip lookup matches only rows of the same kind (VideoForensicsDataClient). Done.
 6. Tests: data database 1007 pass, SQLite 42 pass, data core 261 pass, hosting 1251 pass, Ring provider 754 pass, client core 308 pass. Done.
 
+## Review (Sonnet, read-only, against 92ea079a)
+- MediaItemDto had no MediaKind, so remote reads returned every row as Clip. Fixed: DTO and both mappings carry it (41af45cb).
+- Backup export and import dropped the kind. Decided by the user: export MediaKind, and refuse backups whose items lack it, before any write. Old backups must be exported again. Done (f154a46d).
+- Backfill matched format case-sensitively. Fixed: lower(format) IN ('jpg','jpeg').
+- Rollback (Down) recreates the stricter index and fails while other kinds share an instant with a clip. Noted in the migration.
+- The snapshot diff adds ValueGeneratedOnAdd for AwaitingDingId. EF adds it because of HasDefaultValue. Harmless, kept.
+- Loop detection by FileName "snapshot-loop" checked: the writer produces that name.
+
 ## Open
-- Backup import (BackupImportOrchestrator, ExportedMediaItem) does not carry MediaKind. Imported rows default to Clip, so an imported snapshot can collide the way the loop did. Needs a decision on the export format; not started.
+- Deploy: the live database gets the migration on the next startup. Check the live data by MediaKind before deploy.
 - Deploy: the live database gets the migration on the next startup. The backfill runs then.
 - The merged wip has not been built or tested as a whole.
 
