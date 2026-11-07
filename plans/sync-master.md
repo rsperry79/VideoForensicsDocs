@@ -48,3 +48,9 @@ Ring is rate-limiting the server. The trace found the amplifiers: pulls keep run
 - A ban or throttle stops Ring calls for that account until it clears.
 - Each request makes no more Ring calls than the windows it covers.
 - Events without media are stored, shown as unavailable, and queued for retry; no event pull runs for an account until its queue has cleared.
+
+## Decisions (answered)
+- Unmatched events: row keyed by doorbot ID, linked to the ding-ID row when it arrives.
+- Retry cap: 3 passes, then unavailable.
+- Final state: new Unavailable value on the download status enum, separate from DownloadFailed.
+- Manual Sync range choices: keep All, Custom and the day choices; show the window count before a run.
