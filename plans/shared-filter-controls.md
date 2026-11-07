@@ -10,7 +10,7 @@ Filters on several pages (Accounts, Manual Sync, Notices, Live View, Review) are
 - Controls are listed in the reusable-controls index.
 
 ## Units
-1. **Provider and account state.** Scoped `ProviderAccountFilterState` (Providers: string[]; Account: string?; OnChange) with one storage key, loaded and saved through `RightPanelFilterStore`. Test first: load restores providers and account; set saves them; a second page reading the state sees the same choice.
+1. **Provider and account state (done).** Scoped `ProviderAccountFilterState` (Providers: string[]; Account: string?; OnChange) with one storage key, loaded and saved through `RightPanelFilterStore`. Test first: load restores providers and account; set saves them; a second page reading the state sees the same choice.
 2. **Provider and account control.** `Components/Filters/ProviderAccountFilter.razor`: provider multi-select and account dropdown over the shared state. Options passed in as parameters. Test first: changing the provider clears an account that no longer matches.
 3. **Adopt on Accounts, Manual Sync, Notices.** Remove each page's own provider and account state. Notices' provider filter is single-select today; the shared control is multi-select, so Notices filtering must accept a set. Test first per page.
 4. **Camera control.** Keep `ReviewCameraSelector` as the camera control on the shared `ReviewPageState` backing (already shared by Review, Timeline, Events and Live View). Index it.
