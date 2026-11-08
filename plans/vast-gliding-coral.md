@@ -174,6 +174,56 @@ The operator picker is still on the page body. Should it also move to the right 
 
 ---
 
+## Decisions: Issue 4 (2026-11-07, from the operator)
+
+- The unknown-login filter shows failed logins whose username matches no operator, as "Invalid user: <typed name>".
+- Store the typed username on those failures: nullable `AttemptedUsername` on `SecurityEvent`, plus nullable `OperatorId` (EF migration).
+- Write unknown-username failures to `SecurityEvent` (in addition to the audit log) with a null operator. Today only `OperatorAuthEndpoints.cs` ~line 779 logs them, and only to `SecurityAuditLogEntry`.
+- The unknown-login filter is `OperatorId IS NULL` in SQL, in `SecurityAuditService.GetOperatorEventsAsync`.
+- The filter moves to the right panel, saved through `RightPanelFilterStore`.
+- Supersedes the step list below where it conflicts.
+
+## Review findings: Issue 4 (2026-11-07, Sonnet read-only review)
+
+- **Wrong table.** `/api/v1/security-events` reads `SecurityEvent` (`ISecurityAuditService.GetOperatorEventsAsync` → `SecurityAuditService.cs`), not `SecurityAuditLogEntry`. `AuthFailure` exists only on `SecurityAuditLogEntry`. `SecurityEvent.OperatorId` is non-null, so "`OperatorId IS NULL`" matches no rows. Decision needed (see open question).
+- **Wrong test class.** Use `src/client/web/VideoForensics.WebApp/tests/Api/SecurityEventsEndpointsTests.cs` for the endpoint, not `SecurityAuditLogRepositoryTests`.
+- **Endpoint is POST.** The flag goes on `SecurityEventsQueryRequest` (`src/core/api/src/SecurityEventsDtos.cs`), not a query string.
+- **Contract breadth.** `ISecurityEventsService.GetEventsAsync` callers: `RemoteSecurityEventsService`, `SecurityEvents.razor` (5 sites), `SecurityEventsPageTests.cs` (~8 Moq setups). `ISecurityAuditService`: `SecurityEventTools.cs:104`, `SecurityEventsEndpointsTests.cs:98,139`, `McpToolAuthorizationTests.cs:89,112`.
+- **Restore pattern.** Use `RightPanelFilterStore` (`vf.filters.<pageKey>`), not `LayoutPreferencesState`. Check `Notices.razor` for the restore precedent.
+- **Ordering.** Add the contract parameter before the red tests, or the red run is a compile failure.
+
+## Answers to open points (2026-11-07, from the operator)
+
+- Issue 2: defaults of 15, no migration.
+- Issue 3: move the operator picker to the right panel.
+- Issue 5: show LocalHost in exports and the database too (plan changed from display-only; recheck the Issue 5 steps).
+- Issue 7: no redirect.
+- Issue 10: email choice is a list of event types (plan changed from on/off plus severity; recheck the Issue 10 steps).
+- Issues 11–14: absolute d; dev = row and column sigma; colour uses exact d.
+- Issue 16: flag type as a second line; RSSI flags use overlap, else "No event".
+- Issues 17–18: backfill existing flags. Dev backfill for collapse flags: yes.
+- Issue 18: new all-time bit rate baseline query.
+- Issue 19: change the aria-label as well as the visible labels.
+- Issue 20: label shows the clip under the playhead.
+- Issue 21: auto-advance goes to next (older).
+- Issue 23: tooltip shows clock time.
+- Issue 25: remove passphrase and Recipient description.
+- Issue 27: Zeroconf (3.3) and IPNetwork2 (4.2).
+- Issue 30: review and fixes.
+- Issue 31: move test-support into VideoForensics.Utils.Testing.
+- Issue 4 passkey: the passkey sign-in form requires a username first, so a failed attempt is recorded with that name.
+- Issue 8/10: replace `/api/v1/push/preferences` with `/api/v1/notifications/preferences`; Issue 8's endpoint and tests are rewritten to match.
+- Issue 10: remove the old push preferences route (no compatibility code). Add a `Remote*` service for the notifications page.
+- Issue 12: confirm the Api.Contracts DTO change for the all-time calendar and baseline.
+- Issue 28: archive destination is `docs/plans/archived`.
+- Issue 29: check each plan's status against the code before moving it.
+
+## Status: Issue 4 (2026-11-07)
+
+- Done on `wip` (2363f6cb). Gap tests added on `feature/invalid-user-events`: threat-intel block, blocked country, GeoIP fail-closed, password sign-in disabled. All four record the unknown-user event. 9/9 pass in `OperatorAuthEndpoints_SecurityAuditIntegrationTests`.
+- Red run not taken for these four: the paths already existed, so a failing test first would have needed a code change that is not there. Recorded here, per implement-plan step 3.
+- Open: passkey paths (no typed username); browser check of `/settings/security-events` on a local host.
+
 # Issue 5: show loopback IP as "LocalHost"
 
 ## Findings
@@ -1229,3 +1279,10 @@ Do you want the review (step 1 and 2) only, or the fixes as well?
 ## Open point
 
 Keep it in place (option 1) or move it (option 2)?
+
+## Status: units started 2026-11-07 (feature/plan-ui-units)
+
+- Issue 11 bd2769e4, Issue 12 cd9bc3c6, Issues 13-14 2997c867, Issue 21 and 22 17a4f09c, Issue 24 17a4f09c, Issue 12 server ceefcb14, .gitignore 900ff0d5.
+- Tests: Hosting analysis filter and Ui.Shared review, notes, signal and bitrate filters pass (TokenSaver run_tests).
+- Not verified: browser checks on a local dev host for Issues 11-14, 21, 22, 24.
+- Not merged to wip, not pushed.
