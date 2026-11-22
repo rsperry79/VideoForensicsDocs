@@ -72,4 +72,8 @@ Status: reviewed by Sonnet (read-only); findings folded in. Base: origin/wip wit
 - docs/plans/todo.md was not found in either checkout. Its items (backfill build deploy, test flakes, F:\VF-strip removal) are not in this plan until the file or its items are provided.
 
 ## Results
-(filled as units finish)
+- U2 (Ring tests): closed. Passes on origin/wip cb14696a and on this branch. Earlier 4 failures not reproduced; logged in .claude/task_failure_log.md (2026-11-22).
+- U1, U3, U4: not started.
+- U0, U5–U8: blocked on user actions.
+- U9: depends on U6.
+- todo.md items: not included; the file was not found in either checkout.
