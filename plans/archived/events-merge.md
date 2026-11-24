@@ -12,9 +12,9 @@ Branch: `feat/events-merge` (worktree `F:/vf-worktrees/events-merge`, from `wip`
 1. [x] (done; red run: CS0246/CS0103 missing types; green 8/8, verified by rerun) Row model: one `ReviewEventRow` type (kind, device, start, optional end, label, data lines) built from `EventDto`+`EventDetailDto`, `JammingIncidentDto`, `ReviewAnomaly`, `ReviewBitRateFlag`; sort newest first. Failing unit tests first.
 2. [x] `ReviewEventsTab`: load all four sources, merge via the row model, honour the event-type filter (`ReviewEventFilters.Shows`), keep paging for camera events and live refresh. bUnit tests first.
 3. [x] Row interaction: click = SetCameras (if needed), SelectEvent (camera events), SetCursor, SetTab(Timeline), start playback; hover shows the per-row data (title/popover, localized). Check whether Timeline auto-plays on cursor change; if not, add the play trigger. Tests first.
-4. [ ] Remove Detail: `ReviewTab.Detail`, `ReviewDetailTab.razor`, its tests, tab button in `ReviewSidebarControls`, branch in `ReviewPage`, `ReviewUrl` handling of `tab=detail` (decision needed: map to Events; ask user, no silent shim), unused resource keys.
-5. [ ] Localization: every new string in resx (`rules/ui-shared.md`).
-6. [ ] Lite gate (build + tests for Ui.Shared and tests of direct callers), commit, push `feat/events-merge` (docs submodule first).
+4. [x] Remove Detail: `ReviewTab.Detail`, `ReviewDetailTab.razor`, its tests, tab button in `ReviewSidebarControls`, branch in `ReviewPage`, `ReviewUrl` handling of `tab=detail` (decision needed: map to Events; ask user, no silent shim), unused resource keys.
+5. [x] Localization: every new string in resx (`rules/ui-shared.md`).
+6. [x] Lite gate (build + tests for Ui.Shared and tests of direct callers), commit, push `feat/events-merge` (docs submodule first).
 
 ## Review findings (Sonnet, read-only)
 - Playback never auto-starts: `SetCursor` only seeks (`ReviewPlayer.OnParametersSet`); play is only `TogglePlayAsync`. `ReviewTimelineTab` mounts only on the Timeline tab. Unit 3 adds a "play on arrival" flag in `ReviewPageState`, consumed by `ReviewTimelineTab` after first render and clip load, never toggling when already playing. Test in `ReviewPlaybackCursor_Tests.cs`.
