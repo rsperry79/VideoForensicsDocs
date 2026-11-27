@@ -43,7 +43,7 @@ Each unit: failing test first (record the red run), then the change, then the li
 - Change: replace the single state with a set of live streams; per-device players `liveViewPlayer-{deviceId}`; a failed start stops only its device; `CleanupAsync` stops and closes every live session, each in its own try/catch; starts serialized: the clicked tile's button is disabled during its start, other tiles stay enabled for stops; a queue replaces `_pendingStreamSessionId`.
 - Failing tests: two streams live at once; a failed start leaves the other live; stopping one keeps the other; teardown with two live sessions calls `stopLiveView` for both; a second start while one is starting still gets its own player.
 - Done: tests pass; Garden and Front Door single-stream behaviour covered by the new tests.
-- Status: [ ]
+- Status: [x] (red: 4 failed; green LiveViewPageTests 15/15, Ui.Shared 2373/2373)
 
 ### Unit 3: disable Start at the cap, with a typed error
 - Files: `src/server/core/src/Tools/LiveViewCapReachedException.cs` (new, derives `InvalidOperationException`), `src/client/web/VideoForensics.WebApp/src/Api/LiveViewEndpoints.cs` (409 body carries a `code`), `src/client/host/VideoForensics.Hosting/src/Remote/RemoteLiveViewSessionService.cs` (rethrows the typed error), `src/Pages/LiveView.razor`, `src/Pages/LiveView.resx`.
