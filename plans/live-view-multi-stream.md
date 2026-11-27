@@ -50,7 +50,7 @@ Each unit: failing test first (record the red run), then the change, then the li
 - Change: at 4 live, Start on other tiles is disabled with a localized reason; the cap and budget errors map to localized messages by `code`, not by message text.
 - Failing tests: fifth Start disabled with the reason (bUnit); 409 body includes the code (`LiveViewEndpointsTests.cs`); the Remote service rethrows the typed error (`RemoteLiveViewSessionServiceTests.cs`); the page shows the localized budget message.
 - Done: tests pass; the new key exists in `LiveView.resx` (only resx in the repo for this page).
-- Status: [ ]
+- Status: [x] (Hosting 37/37, WebApp 64/64, Ui.Shared LiveView 36/36)
 
 ### Unit 4: telemetry follows the focused stream
 - Files: `src/Pages/LiveView.razor`, `src/Services/LiveViewActivationWaiter.cs` only if its subscription changes.
