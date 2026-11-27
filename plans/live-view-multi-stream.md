@@ -36,7 +36,7 @@ Each unit: failing test first (record the red run), then the change, then the li
 - Change: `Map<sessionId, pc>`, recorded only after negotiation succeeds (fixes the leak on a missing element); `stopLiveView(sessionId)` closes and removes it; delete the window global, the per-start `ReceiveIceCandidate` registration, `addIceCandidate`, and the `globals.d.ts` field.
 - Failing tests: two sessions each keep their pc; stopping one closes only its pc; a missing video element leaves no pc in the map; the global is gone. Rewrite the "feeds server ICE candidates", both `addIceCandidate` tests, and the `stopLiveView(pc)` test.
 - Done: JS tests pass; `.ts` and `.js` match.
-- Status: [ ]
+- Status: [x] (red: 11 failed; green 42/42)
 
 ### Unit 2: sessions in the page (set, max 4, teardown)
 - Files: `src/Pages/LiveView.razor`. (Merged with the old teardown unit: it cannot be tested alone.)
