@@ -24,12 +24,12 @@ Branch: work directly on `wip` (pull, commit, push `wip` at the end of each unit
 ## Units
 Each unit: failing test first (record the red run), then the change, then the lite gate, then commit and push `wip`.
 
-### Unit 0: test helpers for stream tests
+### Unit 0: test helpers for stream tests (done)
 - Files: `src/client/ui/VideoForensics.Ui.Shared/tests/LiveViewPageTests.cs` (and a shared helper if the file grows).
 - Change: make the `ILiveViewSessionService` mock a field with `StartAsync`, `GetActiveSessionAsync`, `StopAsync` and `ExtendAsync` set up; add a fake `liveview.js` module (`JSInterop.SetupModule(ExpectedModulePath)`) with `initializeHubConnection` returning a reference and `startLiveView` and `stopLiveView` recorded; expose a `Subject<LiveViewSessionDto>` for `SessionChanged`.
 - Test: a helper-only smoke test starts one stream and sees `startLiveView` called once.
 - Done: smoke test green; existing LiveViewPageTests still green.
-- Status: [ ]
+- Status: [x] (red: compile failure, green 11/11)
 
 ### Unit 1: one peer connection per session (JS)
 - Files: `src/wwwroot/scripts/liveview.js`, `src/ts/liveview.ts`, `src/ts/globals.d.ts`, `src/client/web/VideoForensics.WebApp/tests/js/liveview.test.ts`.
